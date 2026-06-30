@@ -1,0 +1,54 @@
+[project]
+name = "server_config"
+version = "0.1.0"
+authors = ["Daniel Williams <daw538@github.com>"]
+description = "Standard configuration tools for research computers across Linux, MacOS, and Windows"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+
+[platforms]
+linux = ["x86_64", "aarch64"]
+macos = ["x86_64", "arm64"]
+windows = ["amd64"]
+
+[dependencies]
+python = ">=3.8"
+rich = ">=13.0.0"
+click = ">=8.0.0"
+platformdirs = ">=3.0.0"
+
+[tool.pixi.tasks]
+install_all = "python -m server_config.install --all"
+install_dust = "python -m server_config.install --tool dust"
+install_duf = "python -m server_config.install --tool duf"
+install_bat = "python -m server_config.install --tool bat"
+system_info = "python -m server_config.system_info"
+
+[tool.pixi.global-tools]
+dust = { from = "dust" }
+duf = { from = "duf" }
+bat = { from = "bat" }
+
+[feature.dev.dependencies]
+taskipy = ">=0.11.0"
+pytest = ">=7.0.0"
+pytest-mock = ">=3.0.0"
+black = ">=23.0.0"
+ruff = ">=0.1.0"
+mypy = ">=1.0.0"
+
+[tool.black]
+line-length = 88
+target-version = ["py38", "py39", "py310", "py311"]
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
