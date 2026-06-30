@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Daniel Williams <daw538@github.com>"]
 description = "Standard configuration tools for research computers across Linux, MacOS, and Windows"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 license = "MIT"
 
 [platforms]
@@ -13,7 +13,7 @@ macos = ["x86_64", "arm64"]
 windows = ["amd64"]
 
 [dependencies]
-python = ">=3.8"
+python = ">=3.12"
 rich = ">=13.0.0"
 click = ">=8.0.0"
 platformdirs = ">=3.0.0"
@@ -29,6 +29,8 @@ system_info = "python -m server_config.system_info"
 dust = { from = "dust" }
 duf = { from = "duf" }
 bat = { from = "bat" }
+htop = { from = "htop" }
+starship = { from = "starship" }
 
 [feature.dev.dependencies]
 taskipy = ">=0.11.0"

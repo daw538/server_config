@@ -1,8 +1,15 @@
 #!/bin/bash
 #
 # Server Configuration Install Script
-# Usage: source install.sh  # To add to PATH and enable completions
-#    OR: ./install.sh      # To run installation directly
+# 
+# Usage: ./install.sh              # Run installation directly
+#        source install.sh         # Add to current session PATH
+# 
+# For full functionality, use the Python CLI:
+#   python -m server_config install all
+#   python -m server_config install --help
+# 
+# Tools: pixi, dust, duf, bat, htop, starship
 #
 
 set -euo pipefail
@@ -110,7 +117,7 @@ install_tools_pixi() {
     script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     
     # Install global tools using pixi
-    local tools=("dust" "duf" "bat")
+    local tools=("dust" "duf" "bat" "htop" "starship")
     
     for tool in "${tools[@]}"; do
         if pixi global list | grep -q "$tool"; then

@@ -11,6 +11,9 @@ A centralized repository for managing a consistent set of utilities across diffe
 - **Rich terminal output**: Beautiful, informative console output
 - **Idempotent installation**: Safe to run multiple times
 - **Tool management**: Install, update, and check tool availability
+- **Shell configuration**: Automatic detection and configuration of shell rc files with user prompts
+- **Configuration files**: Includes predefined configurations (e.g., starship.toml)
+- **Cross-platform awareness**: Handles platform-specific constraints gracefully
 
 ## Quick Start
 
@@ -18,7 +21,7 @@ A centralized repository for managing a consistent set of utilities across diffe
 
 - Git
 - Curl (for installing Pixi)
-- Python >= 3.8 (for the configuration scripts)
+- Python >= 3.12 (for compatibility with modern tools)
 
 ### Installation
 
@@ -115,9 +118,24 @@ The main configuration file defines:
 - **Project metadata**: Name, version, authors
 - **Platform support**: Linux, MacOS, Windows architectures
 - **Dependencies**: Core packages (rich, click, platformdirs)
-- **Global tools**: dust, duf, bat configured as global pixi tools
+- **Global tools**: dust, duf, bat, htop, starship configured as global pixi tools
 - **Tasks**: Common operations like `install_all`, `system_info`
 - **Development dependencies**: For working on this project
+
+### Shell Configuration
+
+The installation process includes automatic shell configuration:
+
+- **Auto-detection**: Detects your current shell (bash, zsh, fish, etc.)
+- **User prompts**: Asks for confirmation before modifying shell rc files
+- **Backups**: Creates timestamped backups of existing rc files in `~/.server_config_backups/`
+- **Relative paths**: Uses `$HOME` instead of hardcoded paths for portability
+
+**Shell modifications include:**
+- Adding pixi to PATH: `export PATH="$HOME/.pixi/bin:$PATH"`
+- Starship initialization: `eval "$(starship init zsh)"` (shell-specific)
+
+**Windows**: Shell configuration is not automatically supported on Windows. Users will receive guidance on manual configuration.
 
 ### Adding New Tools
 
@@ -134,6 +152,7 @@ To add a new tool to the configuration:
            "apt": "sudo apt install new_tool",
        },
        "check": "new_tool --version",
+       "platforms": ["linux", "macos", "windows"]  # Specify supported platforms
    }
    ```
 
@@ -143,6 +162,15 @@ To add a new tool to the configuration:
    new_tool = { from = "new_tool" }
    ```
 
+3. **For tools with configuration files**: Add the config to the `config/` directory
+
+### Included Configuration Files
+
+- **`config/starship.toml`**: Custom starship prompt configuration
+  - Will be copied to `~/.config/starship.toml` during installation
+  - Existing configurations are backed up with timestamps
+  - Can be customized to match your preferences
+
 ## Project Structure
 
 ```
@@ -151,6 +179,8 @@ server_config/
 ├── install.sh             # Main installation script
 ├── README.md              # Documentation
 ├── .gitignore             # Git ignore rules
+├── config/                # Configuration files
+│   └── starship.toml      # Custom starship prompt configuration
 └── server_config/         # Python package
     ├── __init__.py        # Package initialization
     ├── __main__.py        # Module entry point
@@ -167,6 +197,10 @@ server_config/
 - **`dust`**: A more powerful `du` alternative for disk usage analysis
 - **`duf`**: Disk usage analyzer with pretty output
 - **`bat`**: A `cat(1)` clone with syntax highlighting and Git integration
+- **`htop`**: Interactive process viewer (Linux/MacOS only)
+- **`starship`**: Minimal, lightning-fast shell prompt with custom configuration
+
+**Note**: htop is not available on Windows natively - consider using Windows Terminal or WSL.
 
 ### Development Tools
 

@@ -82,6 +82,11 @@ def format_os(os_name: str) -> str:
     return f"[bold {color}]{os_name}[/bold {color}]"
 
 
+def format_rc_file(path: str) -> str:
+    """Format a file path for display."""
+    return f"[dim]{path}[/dim]"
+
+
 class InstallationProgress:
     """Context manager for showing installation progress."""
     

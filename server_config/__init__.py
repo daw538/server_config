@@ -1,6 +1,6 @@
 """Server configuration tools for cross-platform research environments."""
 
-from .terminal import console, print_header, print_success, print_error, print_info, print_warning
+from .terminal import console, print_header, print_success, print_error, print_info, print_warning, format_rc_file
 from . import install
 from . import system_info
 
