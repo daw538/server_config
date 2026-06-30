@@ -160,6 +160,9 @@ setup_environment() {
     # Install global tools
     install_tools_pixi
     
+    # Configure starship prompt
+    configure_starship
+    
     print_info "Setup complete!"
     echo ""
     print_info "To use the installed tools, ensure pixi is in your PATH:"
@@ -180,6 +183,111 @@ add_to_path() {
     local pixi_bin="$HOME/.pixi/bin"
     if [ -d "$pixi_bin" ] && [[ ":$PATH:" != *":$pixi_bin:"* ]]; then
         export PATH="$pixi_bin:$PATH"
+    fi
+}
+
+# Function to detect the current shell
+detect_shell() {
+    local shell=""
+    
+    # Check SHELL environment variable
+    if [ -n "$SHELL" ]; then
+        shell=$(basename "$SHELL")
+        case "$shell" in
+            bash|zsh|fish|sh|dash|csh|tcsh)
+                echo "$shell"
+                return 0
+                ;;
+        esac
+    fi
+    
+    # Check for existing rc files
+    if [ -f ~/.zshrc ]; then
+        echo "zsh"
+        return 0
+    elif [ -f ~/.bashrc ]; then
+        echo "bash"
+        return 0
+    elif [ -f ~/.config/fish/config.fish ]; then
+        echo "fish"
+        return 0
+    fi
+    
+    # Default to bash
+    echo "bash"
+    return 0
+}
+
+# Function to get the rc file for a given shell
+get_rc_file() {
+    local shell="$1"
+    case "$shell" in
+        zsh)    echo "$HOME/.zshrc" ;;
+        bash)   echo "$HOME/.bashrc" ;;
+        fish)   echo "$HOME/.config/fish/config.fish" ;;
+        sh|dash) echo "$HOME/.profile" ;;
+        csh|tcsh) echo "$HOME/.cshrc" ;;
+        *)      echo "$HOME/.bashrc" ;;
+    esac
+}
+
+# Function to configure starship prompt
+configure_starship() {
+    # Check if starship is installed
+    if ! command -v starship &> /dev/null; then
+        print_info "starship not found, skipping shell configuration"
+        return 0
+    fi
+    
+    local shell
+    shell=$(detect_shell)
+    local rc_file
+    rc_file=$(get_rc_file "$shell")
+    
+    # Define the init command for this shell
+    local init_cmd=""
+    case "$shell" in
+        bash)   init_cmd='eval "$(starship init bash)"' ;;
+        zsh)    init_cmd='eval "$(starship init zsh)"' ;;
+        fish)   init_cmd='starship init fish | source' ;;
+        *)      init_cmd='eval "$(starship init bash)"' ;;
+    esac
+    
+    # Check if already configured
+    if [ -f "$rc_file" ] && grep -qF "$init_cmd" "$rc_file" 2>/dev/null; then
+        print_success "starship is already configured in $rc_file"
+        return 0
+    fi
+    
+    # Prompt user
+    print_info "Starship prompt is installed but not yet configured for your shell."
+    print_info "This adds a prompt with git status, directory, and other context to your terminal."
+    read -p "Add starship initialization to $rc_file? [Y/n]: " response
+    
+    # Default to yes
+    response=${response:-Y}
+    
+    if [[ "${response,,}" =~ ^(yes|y) ]]; then
+        # Create backup
+        local backup_file="${rc_file}.starship_bak_$(date +%Y%m%d_%H%M%S)"
+        if [ -f "$rc_file" ]; then
+            cp "$rc_file" "$backup_file"
+            print_info "Created backup: $backup_file"
+        fi
+        
+        # Add the initialization
+        echo "" >> "$rc_file"
+        echo "# Starship prompt initialization (added by server_config)" >> "$rc_file"
+        echo "$init_cmd" >> "$rc_file"
+        
+        print_success "starship initialization added to $rc_file"
+        print_info "Start a new shell session or run 'source $rc_file' to activate it."
+        return 0
+    else
+        print_info "Skipped starship shell configuration."
+        print_info "To enable later, add this to your $rc_file:"
+        print_info "  $init_cmd"
+        return 0
     fi
 }
 

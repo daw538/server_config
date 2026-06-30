@@ -356,7 +356,7 @@ def get_shell_init_commands(shell: str) -> List[Dict[str, str]]:
                 "tool": "starship",
                 "command": starship_config["shell_config"][shell],
                 "description": starship_config["shell_config"]["description"],
-                "required": False  # Optional prompt
+                "required": True  # Prompt with default yes for starship
             })
     
     return commands
