@@ -1,7 +1,7 @@
 [project]
 name = "server_config"
 version = "0.1.0"
-authors = ["Daniel Williams <daw538@github.com>"]
+authors = ["Daniel Williams <d.a.williams3@exeter.ac.uk>"]
 description = "Standard configuration tools for research computers across Linux, MacOS, and Windows"
 readme = "README.md"
 requires-python = ">=3.12"
