@@ -9,7 +9,7 @@
 #   python -m server_config install all
 #   python -m server_config install --help
 # 
-# Tools: pixi, dust, duf, bat, htop, starship
+# Tools: pixi, dust, duf, bat, htop, starship, vibe
 #
 
 set -euo pipefail
@@ -117,7 +117,7 @@ install_tools_pixi() {
     script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     
     # Install global tools using pixi
-    local tools=("dust" "duf" "bat" "htop" "starship")
+    local tools=("dust" "duf" "bat" "htop" "starship" "mistral-vibe")
     
     for tool in "${tools[@]}"; do
         if pixi global list | grep -q "$tool"; then

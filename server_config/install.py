@@ -122,6 +122,19 @@ TOOLS_CONFIG = {
             "description": "Initialize starship prompt"
         }
     },
+    "vibe": {
+        "description": "Vibe CLI - AI coding assistant",
+        "priority": 1,
+        "platforms": ["linux", "macos", "windows"],
+        "install": {
+            "pixi": "pixi global install mistral-vibe",
+            "curl_script": "curl -sSL https://vibe.dev/install.sh | sh",
+        },
+        "check": "vibe --version",
+        "env_var": None,
+        "config_file": "config/vibe.toml",
+        "shell_config": None,
+    },
 }
 
 
@@ -349,16 +362,32 @@ def get_shell_init_commands(shell: str) -> List[Dict[str, str]]:
     return commands
 
 
-def copy_starship_config() -> bool:
-    """Copy starship configuration to ~/.config/starship.toml"""
-    config_path = Path(__file__).parent.parent / "config" / "starship.toml"
-    
-    if not config_path.exists():
-        print_warning("Starship configuration file not found in repository")
+def copy_config_file(tool_name: str) -> bool:
+    """Copy configuration file for a tool to user's config directory."""
+    config = get_tool_config(tool_name)
+    if not config or "config_file" not in config:
+        print_warning(f"No configuration file defined for {tool_name}")
         return False
     
-    target_dir = Path.home() / ".config"
-    target_path = target_dir / "starship.toml"
+    config_filename = config["config_file"]
+    config_path = Path(__file__).parent.parent / config_filename
+    
+    if not config_path.exists():
+        print_warning(f"Configuration file {config_filename} not found in repository")
+        return False
+    
+    # Determine target path based on tool
+    if tool_name == "starship":
+        target_dir = Path.home() / ".config"
+        target_filename = config_path.name
+    elif tool_name == "vibe":
+        target_dir = Path.home() / ".vibe"
+        target_filename = config_path.name
+    else:
+        print_warning(f"Unknown target directory for {tool_name} configuration")
+        return False
+    
+    target_path = target_dir / target_filename
     
     try:
         target_dir.mkdir(exist_ok=True)
@@ -366,17 +395,27 @@ def copy_starship_config() -> bool:
         # Create backup if file exists
         if target_path.exists():
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            backup_path = target_dir / f"starship.toml.{timestamp}.bak"
+            backup_path = target_dir / f"{target_filename}.{timestamp}.bak"
             shutil.copy2(target_path, backup_path)
-            print_info(f"Backed up existing starship.toml to {backup_path}")
+            print_info(f"Backed up existing {target_filename} to {backup_path}")
         
         shutil.copy2(config_path, target_path)
-        print_success(f"Copied starship configuration to {target_path}")
+        print_success(f"Copied {tool_name} configuration to {target_path}")
         return True
         
     except Exception as e:
-        print_error(f"Failed to copy starship configuration: {str(e)}")
+        print_error(f"Failed to copy {tool_name} configuration: {str(e)}")
         return False
+
+
+def copy_starship_config() -> bool:
+    """Copy starship configuration to ~/.config/starship.toml"""
+    return copy_config_file("starship")
+
+
+def copy_vibe_config() -> bool:
+    """Copy vibe configuration to ~/.vibe/vibe.toml"""
+    return copy_config_file("vibe")
 
 
 def prompt_for_shell_config(shell: str, rc_file: str) -> bool:
@@ -585,12 +624,17 @@ def all_ls(force: bool, tool: List[str], skip_shell: bool):
     
     console.print(f"\n[bold]Summary:[/bold] {success_count}/{total_count} tools installed successfully")
     
-    # Handle starship configuration
-    if "starship" in results and results["starship"][0]:
-        print_info("Starship installed successfully!")
-        response = input("Would you like to install the starship configuration file? [Y/n]: ").strip().lower()
-        if response == "" or response.startswith("y"):
-            copy_starship_config()
+    # Handle configuration file deployment
+    config_tools = ["starship", "vibe"]
+    for tool_name in config_tools:
+        if tool_name in results and results[tool_name][0]:
+            print_info(f"{tool_name.capitalize()} installed successfully!")
+            response = input(f"Would you like to install the {tool_name} configuration file? [Y/n]: ").strip().lower()
+            if response == "" or response.startswith("y"):
+                if tool_name == "starship":
+                    copy_starship_config()
+                elif tool_name == "vibe":
+                    copy_vibe_config()
     
     # Handle shell configuration
     if not skip_shell:
@@ -618,11 +662,14 @@ def tool(force: bool, tool_name: str):
     else:
         print_error(f"Failed to install {tool_name}: {message}")
     
-    # Handle starship-specific post-install
-    if tool_name.lower() == "starship" and success:
-        response = input("Would you like to install the starship configuration file? [Y/n]: ").strip().lower()
+    # Handle configuration file deployment for tools with configs
+    if tool_name.lower() in ["starship", "vibe"] and success:
+        response = input(f"Would you like to install the {tool_name} configuration file? [Y/n]: ").strip().lower()
         if response == "" or response.startswith("y"):
-            copy_starship_config()
+            if tool_name == "starship":
+                copy_starship_config()
+            elif tool_name == "vibe":
+                copy_vibe_config()
 
 
 @cli_install.command()
@@ -651,6 +698,21 @@ def copy_starship_config_cmd():
     """Copy starship configuration file to user's config directory."""
     print_header("Install Starship Configuration")
     copy_starship_config()
+
+
+@cli_install.command()
+def copy_vibe_config_cmd():
+    """Copy vibe configuration file to user's config directory."""
+    print_header("Install Vibe Configuration")
+    copy_vibe_config()
+
+
+@cli_install.command()
+def copy_all_configs_cmd():
+    """Copy all configuration files to user's config directories."""
+    print_header("Install All Configurations")
+    copy_starship_config()
+    copy_vibe_config()
 
 
 def main():

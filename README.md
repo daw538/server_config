@@ -76,6 +76,13 @@ python -m server_config check
 python -m server_config install all
 python -m server_config install all --force  # Force reinstall
 python -m server_config install tool dust   # Install specific tool
+python -m server_config install tool vibe   # Install Vibe CLI
+
+# Configure shells and deploy configs
+python -m server_config install configure-shell      # Configure shell rc files
+python -m server_config install copy-starship-config  # Deploy starship config
+python -m server_config install copy-vibe-config      # Deploy vibe config
+python -m server_config install copy-all-configs      # Deploy all configs
 ```
 
 ### Pixi Commands
@@ -118,7 +125,7 @@ The main configuration file defines:
 - **Project metadata**: Name, version, authors
 - **Platform support**: Linux, MacOS, Windows architectures
 - **Dependencies**: Core packages (rich, click, platformdirs)
-- **Global tools**: dust, duf, bat, htop, starship configured as global pixi tools
+- **Global tools**: dust, duf, bat, htop, starship, mistral-vibe configured as global pixi tools
 - **Tasks**: Common operations like `install_all`, `system_info`
 - **Development dependencies**: For working on this project
 
@@ -170,6 +177,11 @@ To add a new tool to the configuration:
   - Will be copied to `~/.config/starship.toml` during installation
   - Existing configurations are backed up with timestamps
   - Can be customized to match your preferences
+- **`config/vibe.toml`**: Vibe CLI configuration
+  - Will be copied to `~/.vibe/config.toml` during installation
+  - Includes gruvbox theme as requested
+  - Existing configurations are backed up with timestamps
+  - Based on your current configuration with tool permissions and settings
 
 ## Project Structure
 
@@ -180,7 +192,8 @@ server_config/
 ├── README.md              # Documentation
 ├── .gitignore             # Git ignore rules
 ├── config/                # Configuration files
-│   └── starship.toml      # Custom starship prompt configuration
+│   ├── starship.toml      # Custom starship prompt configuration
+│   └── vibe.toml         # Vibe CLI configuration with gruvbox theme
 └── server_config/         # Python package
     ├── __init__.py        # Package initialization
     ├── __main__.py        # Module entry point
@@ -199,6 +212,7 @@ server_config/
 - **`bat`**: A `cat(1)` clone with syntax highlighting and Git integration
 - **`htop`**: Interactive process viewer (Linux/MacOS only)
 - **`starship`**: Minimal, lightning-fast shell prompt with custom configuration
+- **`vibe`**: AI coding assistant with gruvbox theme
 
 **Note**: htop is not available on Windows natively - consider using Windows Terminal or WSL.
 
