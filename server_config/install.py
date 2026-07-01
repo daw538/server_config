@@ -351,7 +351,7 @@ def get_shell_init_commands(shell: str) -> List[Dict[str, str]]:
     """Get the shell initialization commands for tools that need them."""
     commands = []
     
-    # Pixi PATH addition
+    # Pixi PATH addition (must come first for eval statements to work)
     pixi_config = get_tool_config("pixi")
     if pixi_config and "shell_config" in pixi_config:
         commands.append({
@@ -361,7 +361,22 @@ def get_shell_init_commands(shell: str) -> List[Dict[str, str]]:
             "required": True
         })
     
-    # Starship initialization
+    # Pixi completion (requires pixi PATH to be set first)
+    if pixi_config and "shell_config" in pixi_config:
+        pixi_completion = {
+            "bash": 'eval "$(pixi completion --shell bash)"',
+            "zsh": 'eval "$(pixi completion --shell zsh)"',
+            "fish": "pixi completion --shell fish | source",
+        }
+        if shell in pixi_completion:
+            commands.append({
+                "tool": "pixi_completion",
+                "command": pixi_completion[shell],
+                "description": "Enable pixi shell completion",
+                "required": False
+            })
+    
+    # Starship initialization (requires pixi PATH if installed via pixi)
     starship_config = get_tool_config("starship")
     if starship_config and "shell_config" in starship_config:
         if shell in starship_config["shell_config"]:
@@ -369,8 +384,39 @@ def get_shell_init_commands(shell: str) -> List[Dict[str, str]]:
                 "tool": "starship",
                 "command": starship_config["shell_config"][shell],
                 "description": starship_config["shell_config"]["description"],
-                "required": True  # Prompt with default yes for starship
+                "required": False
             })
+    
+    # General environment settings
+    env_settings = [
+        {
+            "tool": "editor",
+            "command": 'export EDITOR=nano',
+            "description": "Set nano as default text editor",
+            "required": False
+        },
+        {
+            "tool": "grep_color",
+            "command": "export GREP_OPTIONS='--color=auto'",
+            "description": "Enable color output for grep",
+            "required": False
+        },
+        {
+            "tool": "history_size",
+            "command": 'export HISTSIZE=100000',
+            "description": "Set history size (commands in memory)",
+            "required": False
+        },
+        {
+            "tool": "history_file_size",
+            "command": 'export HISTFILESIZE=1000000',
+            "description": "Set history file size (saved commands)",
+            "required": False
+        },
+    ]
+    
+    for setting in env_settings:
+        commands.append(setting)
     
     return commands
 
@@ -516,6 +562,39 @@ def prompt_for_shell_config(shell: str, rc_file: str) -> bool:
                 print_error(f"Failed to modify {rc_file}: {str(e)}")
         else:
             print_info(f"Skipped {description}")
+    
+    # Prompt for git color configuration separately (writes to ~/.gitconfig, not rc file)
+    print_section("Git Color Configuration")
+    print_info("This will run: git config --global color.ui auto")
+    print_info("(This configures git to use color output by default)")
+    
+    # Check if already configured
+    try:
+        result = subprocess.run(
+            ["git", "config", "--global", "--get", "color.ui"],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        if result.returncode == 0 and result.stdout.strip() == "auto":
+            print_success("Git color.ui is already set to auto")
+        else:
+            response = input("Configure git color output? [y/N]: ").strip().lower()
+            if response == "" or response.startswith("y"):
+                if configure_git_colors():
+                    modified = True
+            else:
+                print_info("Skipped git color configuration")
+    except FileNotFoundError:
+        print_warning("Git is not installed. Cannot configure git colors.")
+    except Exception:
+        # If we can't check, just prompt
+        response = input("Configure git color output? [y/N]: ").strip().lower()
+        if response == "" or response.startswith("y"):
+            if configure_git_colors():
+                modified = True
+        else:
+            print_info("Skipped git color configuration")
     
     if modified:
         print_success("Shell configuration updated!")
@@ -743,6 +822,30 @@ def copy_dircolors_config_cmd():
     copy_config_file("dircolors")
 
 
+def configure_git_colors() -> bool:
+    """Configure git to use color output."""
+    print_info("Configuring git color output...")
+    try:
+        result = subprocess.run(
+            ["git", "config", "--global", "color.ui", "auto"],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        if result.returncode == 0:
+            print_success("Git color configuration set successfully")
+            return True
+        else:
+            print_error(f"Failed to configure git colors: {result.stderr}")
+            return False
+    except FileNotFoundError:
+        print_error("Git is not installed. Cannot configure git colors.")
+        return False
+    except Exception as e:
+        print_error(f"Error configuring git colors: {str(e)}")
+        return False
+
+
 @cli_install.command()
 def copy_all_configs_cmd():
     """Copy all configuration files to user's config directories."""
@@ -750,6 +853,13 @@ def copy_all_configs_cmd():
     copy_starship_config()
     copy_vibe_config()
     copy_config_file("dircolors")
+
+
+@cli_install.command()
+def configure_git_colors_cmd():
+    """Configure git to use color output."""
+    print_header("Configure Git Colors")
+    configure_git_colors()
 
 
 def main():
