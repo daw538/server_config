@@ -1,0 +1,20 @@
+# ~/.vibe/agents/code-reviewer.toml
+
+display_name = "Code Reviewer"
+description = """Read-only subagent that reviews code changes for bugs, \
+security issues, convention violations, and missing error handling. \
+Scores findings by priority (high/medium/low). \
+Used by the feature-dev skill during Phase 6 (Quality Review). \
+Delegate tasks like: 'Review these files for bugs and security issues', \
+'Check whether this implementation follows project conventions'."""
+
+safety = "safe"
+agent_type = "subagent"
+auto_approve = true
+
+enabled_tools = [
+    "read_file",
+    "grep",
+]
+
+system_prompt_id = "code-reviewer"

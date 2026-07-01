@@ -1,0 +1,23 @@
+# ~/.vibe/agents/code-explorer.toml
+
+display_name = "Code Explorer"
+description = """Read-only subagent that explores the codebase to understand \
+existing patterns, trace execution paths, and identify integration points. \
+Used by the feature-dev skill during Phase 2 (Codebase Exploration). \
+Delegate tasks like: 'Find how authentication works in this codebase', \
+'What patterns does this project use for database access?', \
+'Which files handle API routing?'"""
+
+safety = "safe"
+agent_type = "subagent"
+auto_approve = true
+
+enabled_tools = [
+    "read_file",
+    "grep",
+    "bash",
+    "todo",
+]
+
+# System prompt that focuses the subagent on exploration
+system_prompt_id = "code-explorer"

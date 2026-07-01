@@ -1,0 +1,20 @@
+# ~/.vibe/agents/code-architect.toml
+
+display_name = "Code Architect"
+description = """Read-only subagent that designs implementation approaches for \
+new features. Given a feature description, codebase context, and requirements, \
+it proposes 2-3 implementation strategies with clear trade-offs. \
+Used by the feature-dev skill during Phase 4 (Architecture Design). \
+Delegate tasks like: 'Design an approach for adding OAuth to this codebase', \
+'Propose architectures for the caching layer given these constraints'."""
+
+safety = "safe"
+agent_type = "subagent"
+auto_approve = true
+
+enabled_tools = [
+    "read_file",
+    "grep",
+]
+
+system_prompt_id = "code-architect"
