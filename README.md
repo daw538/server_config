@@ -82,6 +82,7 @@ python -m server_config install tool vibe   # Install Vibe CLI
 python -m server_config install configure-shell      # Configure shell rc files
 python -m server_config install copy-starship-config  # Deploy starship config
 python -m server_config install copy-vibe-config      # Deploy vibe config
+python -m server_config install copy-dircolors-config # Deploy dircolors config
 python -m server_config install copy-all-configs      # Deploy all configs
 ```
 
@@ -141,6 +142,7 @@ The installation process includes automatic shell configuration:
 **Shell modifications include:**
 - Adding pixi to PATH: `export PATH="$HOME/.pixi/bin:$PATH"`
 - Starship initialization: `eval "$(starship init zsh)"` (shell-specific)
+- Dircolors activation: `eval "$(dircolors ~/.dircolors 2>/dev/null)"` for beautiful file listings
 
 **Windows**: Shell configuration is not automatically supported on Windows. Users will receive guidance on manual configuration.
 
@@ -182,6 +184,11 @@ To add a new tool to the configuration:
   - Includes gruvbox theme as requested
   - Existing configurations are backed up with timestamps
   - Based on your current configuration with tool permissions and settings
+- **`config/dircolors`**: Gruvbox dircolors configuration
+  - Will be copied to `~/.dircolors` during installation
+  - Beautiful gruvbox color scheme for `ls` command
+  - Includes specific colors for different file types (directories, executables, archives, etc.)
+  - Existing configurations are backed up with timestamps
 
 ## Project Structure
 
@@ -193,7 +200,8 @@ server_config/
 ├── .gitignore             # Git ignore rules
 ├── config/                # Configuration files
 │   ├── starship.toml      # Custom starship prompt configuration
-│   └── vibe.toml         # Vibe CLI configuration with gruvbox theme
+│   ├── vibe.toml         # Vibe CLI configuration with gruvbox theme
+│   └── dircolors         # Gruvbox color scheme for ls/dircolors
 └── server_config/         # Python package
     ├── __init__.py        # Package initialization
     ├── __main__.py        # Module entry point
@@ -213,6 +221,12 @@ server_config/
 - **`htop`**: Interactive process viewer (Linux/MacOS only)
 - **`starship`**: Minimal, lightning-fast shell prompt with custom configuration
 - **`vibe`**: AI coding assistant with gruvbox theme
+
+### Configuration Files
+
+- **`config/starship.toml`**: Custom starship prompt configuration
+- **`config/vibe.toml`**: Vibe CLI configuration with gruvbox theme
+- **`config/dircolors`**: Gruvbox color scheme for `ls` directory listings
 
 **Note**: htop is not available on Windows natively - consider using Windows Terminal or WSL.
 

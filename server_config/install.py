@@ -135,6 +135,19 @@ TOOLS_CONFIG = {
         "config_file": "config/vibe.toml",
         "shell_config": None,
     },
+    "dircolors": {
+        "description": "Gruvbox color scheme for ls/dircolors",
+        "priority": 0,  # Low priority - config only, no installation needed
+        "platforms": ["linux", "macos"],
+        "install": None,
+        "check": None,
+        "env_var": None,
+        "config_file": "config/dircolors",
+        "shell_config": {
+            "path": 'eval "$(dircolors ~/.dircolors 2>/dev/null)"',
+            "description": "Enable gruvbox colors for ls"
+        }
+    },
 }
 
 
@@ -383,6 +396,10 @@ def copy_config_file(tool_name: str) -> bool:
     elif tool_name == "vibe":
         target_dir = Path.home() / ".vibe"
         target_filename = config_path.name
+    elif tool_name == "dircolors":
+        # dircolors goes directly to home directory as .dircolors
+        target_dir = Path.home()
+        target_filename = ".dircolors"
     else:
         print_warning(f"Unknown target directory for {tool_name} configuration")
         return False
@@ -625,16 +642,31 @@ def all_ls(force: bool, tool: List[str], skip_shell: bool):
     console.print(f"\n[bold]Summary:[/bold] {success_count}/{total_count} tools installed successfully")
     
     # Handle configuration file deployment
-    config_tools = ["starship", "vibe"]
-    for tool_name in config_tools:
-        if tool_name in results and results[tool_name][0]:
-            print_info(f"{tool_name.capitalize()} installed successfully!")
+    config_tools = [
+        ("starship", True),   # Requires tool to be installed
+        ("vibe", True),       # Requires tool to be installed  
+        ("dircolors", False)  # Config only, no installation required
+    ]
+    
+    for tool_name, requires_installation in config_tools:
+        # Skip dircolors for Windows (not typically used)
+        if tool_name == "dircolors" and get_os_type() == "windows":
+            continue
+            
+        # Check if we should deploy this config
+        should_deploy = False
+        if requires_installation:
+            # Only deploy if tool was installed
+            should_deploy = tool_name in results and results[tool_name][0]
+        else:
+            # Always offer to deploy config-only items
+            should_deploy = True
+        
+        if should_deploy:
+            print_info(f"{tool_name.capitalize()} configuration available!")
             response = input(f"Would you like to install the {tool_name} configuration file? [Y/n]: ").strip().lower()
             if response == "" or response.startswith("y"):
-                if tool_name == "starship":
-                    copy_starship_config()
-                elif tool_name == "vibe":
-                    copy_vibe_config()
+                copy_config_file(tool_name)
     
     # Handle shell configuration
     if not skip_shell:
@@ -666,10 +698,7 @@ def tool(force: bool, tool_name: str):
     if tool_name.lower() in ["starship", "vibe"] and success:
         response = input(f"Would you like to install the {tool_name} configuration file? [Y/n]: ").strip().lower()
         if response == "" or response.startswith("y"):
-            if tool_name == "starship":
-                copy_starship_config()
-            elif tool_name == "vibe":
-                copy_vibe_config()
+            copy_config_file(tool_name)
 
 
 @cli_install.command()
@@ -708,11 +737,19 @@ def copy_vibe_config_cmd():
 
 
 @cli_install.command()
+def copy_dircolors_config_cmd():
+    """Copy dircolors configuration file to user's home directory."""
+    print_header("Install Dircolors Configuration")
+    copy_config_file("dircolors")
+
+
+@cli_install.command()
 def copy_all_configs_cmd():
     """Copy all configuration files to user's config directories."""
     print_header("Install All Configurations")
     copy_starship_config()
     copy_vibe_config()
+    copy_config_file("dircolors")
 
 
 def main():

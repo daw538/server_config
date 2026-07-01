@@ -1,0 +1,209 @@
+# Gruvbox theme for GNU ls/dircolors
+# Based on gruvbox color palette to match starship/vibe themes
+# Colors use 256-color ANSI codes that work on most modern terminals
+
+# Gruvbox color mappings:
+# dark0_hard: 235 (282828) - background
+# dark0: 236 (32241e)
+# dark1: 237 (3c3836)
+# dark2: 238 (504945)
+# dark3: 239 (5c6770) - comments
+# dark4: 240 (66818c) - dark purple/blue
+# light0_hard: 229 (f9f5d7) - bright foreground
+# light0: 230 (fbf1c7) - foreground
+# light1: 231 (f2e5bc)
+# light2: 242 (e5d8dc)
+# light3: 243 (d4cac4)
+# light4: 244 (c4b8a8)
+# bright_red: 196 (fb4934) - red
+# bright_green: 34 (98971a) - green  
+# bright_yellow: 214 (fabd2f) - yellow
+# bright_blue: 33 (83a598) - blue
+# bright_purple: 176 (d3869b) - purple
+# bright_aqua: 36 (8ec07c) - aqua/teal
+# bright_orange: 208 (fe8019) - orange
+# neutral_red: 160 (cc241d) - red
+# neutral_green: 142 (98971a) - green
+# neutral_yellow: 172 (d79921) - yellow
+# neutral_blue: 37 (458588) - blue
+# neutral_purple: 133 (b16286) - purple
+# neutral_aqua: 65 (689d6a) - aqua
+# faint_red: 29 (cc241d dim)
+# faint_green: 28 (98971a dim)
+# faint_yellow: 220 (d79921 dim)
+# faint_blue: 27 (458588 dim)
+# faint_purple: 132 (b16286 dim)
+# faint_aqua: 64 (689d6a dim)
+
+# Format: TERM=type;color
+TERM xterm-256color
+
+# Directory colors
+DIR 37          # Dark blue - directories
+DIR 01;37       # Bold dark blue - directories with links
+
+# Symlinks
+LINK 36         # Aqua - symbolic links
+LINK 01;36      # Bold aqua - orphaned symlinks
+
+# Special files
+SOCK 133        # Purple - sockets
+FIFO 133        # Purple - named pipes (FIFOs)
+DOOR 133        # Purple - doors
+
+# Regular files
+FILE 229        # Light foreground - regular files
+
+# Executables
+EXEC 142        # Green - executables
+
+# Archive files
+BLK 65          # Aqua - block device files
+CHR 65          # Aqua - character device files
+
+# Archive formats
+TAR 28          # Faint green - tar files
+GZ 28           # Faint green - gzipped files
+BZ2 28          # Faint green - bz2 files
+Z 28            # Faint green - z files
+XZ 28           # Faint green - xz files
+LZMA 28         # Faint green - lzma files
+LZ4 28          # Faint green - lz4 files
+ZST 28          # Faint green - zstd files
+RAR 28          # Faint green - rar files
+ZIP 28          # Faint green - zip files
+7Z 28           # Faint green - 7z files
+
+# Source code files
+.C 34           # Bright green - C source
+.H 34           # Bright green - C header
+.CPP 34         # Bright green - C++ source
+.HPP 34         # Bright green - C++ header
+.CC 34          # Bright green - C++ source
+.HH 34          # Bright green - C++ header
+.PY 208         # Orange - Python files
+.RB 208         # Orange - Ruby files
+.JS 208         # Orange - JavaScript files
+.TS 208         # Orange - TypeScript files
+.JAVA 208       # Orange - Java files
+.GO 208         # Orange - Go files
+.RS 208         # Orange - Rust files
+.SWIFT 208      # Orange - Swift files
+.PHP 208        # Orange - PHP files
+.PL 208         # Orange - Perl files
+.PM 208         # Orange - Perl modules
+.SH 208         # Orange - Shell scripts
+.BASH 208       # Orange - Bash scripts
+.ZSH 208        # Orange - Zsh scripts
+.FISH 208       # Orange - Fish scripts
+
+# Configuration files
+.CONFIG 33       # Blue - config files
+.CFG 33          # Blue - cfg files
+.INI 33          # Blue - ini files
+.TOML 33         # Blue - toml files
+.YAML 33         # Blue - yaml files
+.YML 33          # Blue - yml files
+.JSON 33         # Blue - json files
+.CONF 33         # Blue - conf files
+
+# Documentation files
+.TXT 229         # Light foreground - text files
+.MD 229         # Light foreground - markdown files
+.MARKDOWN 229    # Light foreground - markdown files
+.RST 229         # Light foreground - reStructuredText
+.TEX 229         # Light foreground - TeX files
+
+# Log files
+.LOG 240         # Dark purple - log files
+
+# Media files
+.JPG 133         # Purple - JPEG images
+.JPEG 133        # Purple - JPEG images
+.PNG 133         # Purple - PNG images
+.GIF 133         # Purple - GIF images
+.SVG 133         # Purple - SVG images
+.MPG 133         # Purple - MPEG videos
+.MPEG 133        # Purple - MPEG videos
+.MP4 133         # Purple - MP4 videos
+.AVI 133         # Purple - AVI videos
+.MOV 133         # Purple - QuickTime videos
+.WMV 133         # Purple - WMV videos
+.MKV 133         # Purple - Matroska videos
+
+# Audio files
+.MP3 133         # Purple - MP3 audio
+.WAV 133         # Purple - WAV audio
+.OGG 133         # Purple - OGG audio
+.FLAC 133        # Purple - FLAC audio
+.AAC 133         # Purple - AAC audio
+
+# Database files
+.SQL 37          # Dark blue - SQL files
+.DB 37           # Dark blue - Database files
+.SQLITE 37       # Dark blue - SQLite files
+.SQLITE3 37      # Dark blue - SQLite3 files
+
+# Build system files
+.MAKEFILE 208     # Orange - Makefiles
+.CMAKE 33        # Blue - CMake files
+.AUTOCONF 33     # Blue - autoconf files
+.AUTOM4TE 33     # Blue - autom4te files
+.M4 33           # Blue - m4 files
+.IN 33           # Blue - .in files
+.AC 33           # Blue - .ac files
+.AM 33           # Blue - .am files
+
+# Version control
+.GITIGNORE 240   # Dark purple - .gitignore
+.GITMODULES 240  # Dark purple - .gitmodules
+.GITATTRIBUTES 240 # Dark purple - .gitattributes
+
+# Lock files
+.LOCK 196        # Bright red - lock files
+
+# Temporary files
+.TMP 240         # Dark purple - temp files
+.TEMP 240        # Dark purple - temp files
+.CACHE 240       # Dark purple - cache files
+
+# Hidden files
+*~ 240           # Dark purple - backup files (tilde)
+.* 241          # Darker gray - hidden files
+
+# Suffixes for specific file types
+.spc 33          # Blue - SPICE files
+.ps 196          # Bright red - PostScript files
+.pdf 196          # Bright red - PDF files
+.dvi 196          # Bright red - DVI files
+
+# Arguments: color codes for different file attributes
+# Normal file
+NORMAL 229
+
+# File with execute permission
+FILE_EXEC 142
+
+# Directory
+DIR 37
+
+# Symbolic link
+SYMLINK 36
+
+# Socket
+SOCK 133
+
+# Pipe
+FIFO 133
+
+# Block device
+BLK 65
+
+# Character device  
+CHR 65
+
+# Door (Solaris)
+DOOR 133
+
+# Options
+OPTIONS "nocap"
